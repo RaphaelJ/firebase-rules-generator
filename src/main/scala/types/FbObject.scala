@@ -20,6 +20,7 @@ package com.bloomlife.fbrules.types
 
 import play.api.libs.json._
 
-case class FbObject(childs: Map[String, FbNode]) extends FbNode {
-  override def rules: JsObject = JsObject(childs.mapValues(_.rules))
+case class FbObject(childs: (String, FbNode)*) extends FbNode {
+  override def rules: JsObject =
+    JsObject(childs.map { case (key, child) => (key, child.rules) })
 }
