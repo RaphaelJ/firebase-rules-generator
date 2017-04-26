@@ -16,23 +16,13 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package com.bloomlife.fbrules
+package com.bloomlife.fbrules.types
 
 import play.api.libs.json._
 
-import com.bloomlife.fbrules.types._
-
-object Main {
-  def main(args: Array[String]) {
-    val schema = FbObject(Map(
-      "users" -> FbCollection(userId =>
-        FbObject(Map(
-          "name" -> FbString(minLength=Some(4), maxLength=Some(64)),
-          "email" -> FbString(),
-          "age" -> FbInteger(min=Some(18))
-        )))
-      ))
-
-    println(Json.prettyPrint(schema.rules))
+case class FbCollection(coll: String => FbNode) extends FbNode {
+  def rules = {
+    val id = "$id"
+    JsObject(Seq(id -> coll(id).rules))
   }
 }

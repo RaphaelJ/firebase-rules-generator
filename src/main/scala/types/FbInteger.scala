@@ -16,23 +16,33 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package com.bloomlife.fbrules
+package com.bloomlife.fbrules.types
 
 import play.api.libs.json._
 
-import com.bloomlife.fbrules.types._
+case class FbInteger(min: Option[Long] = None, max: Option[Long] = None)
+  extends FbField {
 
-object Main {
-  def main(args: Array[String]) {
-    val schema = FbObject(Map(
-      "users" -> FbCollection(userId =>
-        FbObject(Map(
-          "name" -> FbString(minLength=Some(4), maxLength=Some(64)),
-          "email" -> FbString(),
-          "age" -> FbInteger(min=Some(18))
-        )))
-      ))
+  override def validate: Option[Javascript] = {
+    var constraints = Seq("newData.isInteger")
 
-    println(Json.prettyPrint(schema.rules))
+    if (min.isDefined) {
+      constraints :+= s"newData.val() >= ${min.get}"
+    }
+
+    if (max.isDefined) {
+      constraints :+= s"newData.val() <= ${max.get}"
+    }
+
+    Some(constraints.mkString(" && "))
+  }
+
+  override def rules: JsObject = {
+    val validateStr = this.validate
+    if (validateStr.isDefined) {
+      JsObject(Seq(".validate" -> JsString(validateStr.get)))
+    } else {
+      JsObject(Seq())
+    }
   }
 }
