@@ -16,38 +16,13 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package com.bloomlife.fbrules.types
+package com.bloomlife.fbrules
 
+import scalaz.State
 import play.api.libs.json._
-import scalaz.syntax.applicative._
 
-import com.bloomlife.fbrules.Rules.Generator
+object Rules {
+  type Generator[T] = State[Int, T]
 
-case class FbString(
-  minLength: Option[Long] = None, maxLength: Option[Long] = None)
-  extends FbField {
-
-  def validate: Option[Javascript] = {
-    var constraints = Seq("newData.isString")
-
-    if (minLength.isDefined) {
-      constraints :+= s"newData.val().length >= ${minLength.get}"
-    }
-
-    if (maxLength.isDefined) {
-      constraints :+= s"newData.val().length <= ${maxLength.get}"
-    }
-
-    Some(constraints.mkString(" && "))
-  }
-
-  override def rules: Generator[JsObject] = {
-    val validateStr = this.validate
-
-    if (validateStr.isDefined) {
-      JsObject(Seq(".validate" -> JsString(validateStr.get)))
-    } else {
-      JsObject(Seq())
-    }
-  }.pure[Generator]
+  def generate(schema: types.FbNode): JsValue = schema.rules.eval(0)
 }

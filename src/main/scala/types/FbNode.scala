@@ -25,9 +25,6 @@ import com.bloomlife.fbrules.Rules.Generator
 trait FbNode {
   type Javascript = String
 
-  /** Generates a Javascript expression that */
-  def validate: Option[Javascript] = None
-
   /** Generates the Firebase rules for the object. */
   def rules(): Generator[JsObject]
 }

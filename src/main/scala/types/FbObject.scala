@@ -26,13 +26,21 @@ import com.bloomlife.fbrules.Rules.Generator
 
 case class FbObject(childs: (String, FbNode)*) extends FbNode {
   override def rules: Generator[JsObject] = {
-    childs.
-      toList.
-      traverseS {
-        // Recursively generates the rules for the children.
-        case (key, child) =>
-          for (rules <- child.rules) yield (key -> rules)
-      }.
-      map(JsObject(_))
+    for {
+      childRules <- childs.
+        toList.
+        traverseS {
+          // Recursively generates the rules for the children.
+          case (key, child) =>
+            for (rules <- child.rules) yield (key -> rules)
+        }
+    } yield {
+      JsObject(
+        // Does not allow any other field.
+        ("$other" -> Json.toJson(Map(".validate" -> JsFalse))) ::
+        childRules
+        )
+    }
+
   }
 }

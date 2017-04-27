@@ -26,7 +26,7 @@ import com.bloomlife.fbrules.Rules.Generator
 case class FbInteger(min: Option[Long] = None, max: Option[Long] = None)
   extends FbField {
 
-  override def validate: Option[Javascript] = {
+  def validate: Option[Javascript] = {
     var constraints = Seq("newData.isInteger")
 
     if (min.isDefined) {
