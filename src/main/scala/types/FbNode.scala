@@ -23,8 +23,6 @@ import play.api.libs.json._
 import com.bloomlife.fbrules.Rules.Generator
 
 trait FbNode {
-  type Javascript = String
-
   /** Generates the Firebase rules for the object. */
   def rules(): Generator[JsObject]
 }

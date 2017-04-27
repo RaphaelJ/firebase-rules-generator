@@ -18,4 +18,22 @@
 
 package com.bloomlife.fbrules.types
 
-trait FbField extends FbNode
+import play.api.libs.json._
+import scalaz.syntax.applicative._
+
+import com.bloomlife.fbrules.Rules.Generator
+
+trait FbField extends FbNode {
+  /** Returns a Javascript expression that validates the field's content. */
+  def validate: Option[String]
+
+  override def rules: Generator[JsObject] = {
+    val validateStr = this.validate
+
+    if (validateStr.isDefined) {
+      JsObject(Seq(".validate" -> JsString(validateStr.get)))
+    } else {
+      JsObject(Seq())
+    }
+  }.pure[Generator]
+}

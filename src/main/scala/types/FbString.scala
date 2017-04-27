@@ -18,16 +18,13 @@
 
 package com.bloomlife.fbrules.types
 
-import play.api.libs.json._
-import scalaz.syntax.applicative._
-
 import com.bloomlife.fbrules.Rules.Generator
 
 case class FbString(
   minLength: Option[Long] = None, maxLength: Option[Long] = None)
   extends FbField {
 
-  def validate: Option[Javascript] = {
+  def validate: Option[String] = {
     var constraints = Seq("newData.isString")
 
     if (minLength.isDefined) {
@@ -40,14 +37,4 @@ case class FbString(
 
     Some(constraints.mkString(" && "))
   }
-
-  override def rules: Generator[JsObject] = {
-    val validateStr = this.validate
-
-    if (validateStr.isDefined) {
-      JsObject(Seq(".validate" -> JsString(validateStr.get)))
-    } else {
-      JsObject(Seq())
-    }
-  }.pure[Generator]
 }
