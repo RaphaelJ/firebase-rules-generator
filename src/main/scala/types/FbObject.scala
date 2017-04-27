@@ -24,23 +24,41 @@ import scalaz.syntax.traverse._
 
 import com.bloomlife.fbrules.Rules.Generator
 
-case class FbObject(childs: (String, FbNode)*) extends FbNode {
+case class FbObject(childs: (String, FbObjectField)*) extends FbNode {
   override def rules: Generator[JsObject] = {
     for {
+      // Recursively generates the rules for the children.
       childRules <- childs.
         toList.
         traverseS {
-          // Recursively generates the rules for the children.
           case (key, child) =>
-            for (rules <- child.rules) yield (key -> rules)
+            for (rules <- child.node.rules) yield (key -> rules)
         }
     } yield {
+      val requiredFields = childs.
+        filter(_._2.required).
+        map { case (key, _)  => s"'${key}'" }.
+        mkString(",")
+
       JsObject(
         // Does not allow any other field.
+        (".validate" -> JsString(s"newData.hasChildren([${requiredFields}])")) ::
         ("$other" -> Json.toJson(Map(".validate" -> JsFalse))) ::
         childRules
         )
     }
-
   }
+}
+
+sealed trait FbObjectField {
+  val node: FbNode
+  val required: Boolean
+}
+
+case class FbRequired(node: FbNode) extends FbObjectField {
+  val required = true
+}
+
+case class FbOptional(node: FbNode) extends FbObjectField {
+  val required = false
 }

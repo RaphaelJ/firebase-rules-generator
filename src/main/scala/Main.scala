@@ -25,19 +25,20 @@ import com.bloomlife.fbrules.types._
 object Main {
   def main(args: Array[String]) {
     val msgDef = FbObject(
-      "content" -> FbString(minLength=Some(10), maxLength=Some(255))
+      "content" -> FbRequired(FbString(minLength=Some(10), maxLength=Some(255)))
       )
 
     val userDef = FbObject(
-      "name" -> FbString(minLength=Some(4), maxLength=Some(64)),
-      "email" -> FbString(),
-      "age" -> FbInteger(min=Some(18)),
-      "msgs" -> FbCollection(mesgId => msgDef)
+      "name" -> FbRequired(FbString(minLength=Some(4), maxLength=Some(64))),
+      "email" -> FbRequired(FbString()),
+      "age" -> FbOptional(FbInteger(min=Some(18))),
+      "msgs" -> FbOptional(FbCollection(mesgId => msgDef))
       )
 
     val schema = FbObject(
-      "users" -> FbCollection(userId => userDef),
-      "messages" -> FbCollection(userId => FbCollection(msgId => msgDef))
+      "users" -> FbOptional(FbCollection(userId => userDef)),
+      "messages" -> FbOptional(
+        FbCollection(userId => FbCollection(msgId => msgDef)))
       )
 
     val rules = Rules.generate(schema)
