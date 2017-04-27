@@ -40,6 +40,7 @@ object Main {
       "messages" -> FbCollection(userId => FbCollection(msgId => msgDef))
       )
 
-    println(Json.prettyPrint(schema.rules))
+    val rules = Rules.generate(schema)
+    println(Json.prettyPrint(rules))
   }
 }

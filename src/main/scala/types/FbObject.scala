@@ -19,8 +19,20 @@
 package com.bloomlife.fbrules.types
 
 import play.api.libs.json._
+import scalaz.std.list._
+import scalaz.syntax.traverse._
+
+import com.bloomlife.fbrules.Rules.Generator
 
 case class FbObject(childs: (String, FbNode)*) extends FbNode {
-  override def rules: JsObject =
-    JsObject(childs.map { case (key, child) => (key, child.rules) })
+  override def rules: Generator[JsObject] = {
+    childs.
+      toList.
+      traverseS {
+        // Recursively generates the rules for the children.
+        case (key, child) =>
+          for (rules <- child.rules) yield (key -> rules)
+      }.
+      map(JsObject(_))
+  }
 }

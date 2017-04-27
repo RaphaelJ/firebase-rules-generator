@@ -19,10 +19,20 @@
 package com.bloomlife.fbrules.types
 
 import play.api.libs.json._
+import scalaz.State.{get, put}
+
+import com.bloomlife.fbrules.Rules.Generator
 
 case class FbCollection(coll: String => FbNode) extends FbNode {
-  def rules = {
-    val id = "$id"
-    JsObject(Seq(id -> coll(id).rules))
-  }
+  def rules: Generator[JsObject] =
+    for {
+      // Generates a new `$id` for the rules.
+      currId <- get
+      _ <- put(currId + 1)
+      currIdStr = s"$$id_${currId}"
+
+      nestedRules <- coll(currIdStr).rules
+    } yield {
+      JsObject(Seq(currIdStr -> nestedRules))
+    }
 }

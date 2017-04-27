@@ -8,5 +8,9 @@ lazy val root = (project in file(".")).
       version      := "0.1.0"
     )),
     name := "Firebase Rules Generator",
-    libraryDependencies += "com.typesafe.play" % "play-json_2.12" % "2.6.0-M7"
+
+    libraryDependencies ++= Seq(
+      "com.typesafe.play" % "play-json_2.12" % "2.6.0-M7",
+      "org.scalaz" % "scalaz-core_2.12" % "7.2.11"
+    )
   )

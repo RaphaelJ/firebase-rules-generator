@@ -20,6 +20,8 @@ package com.bloomlife.fbrules.types
 
 import play.api.libs.json._
 
+import com.bloomlife.fbrules.Rules.Generator
+
 trait FbNode {
   type Javascript = String
 
@@ -27,5 +29,5 @@ trait FbNode {
   def validate: Option[Javascript] = None
 
   /** Generates the Firebase rules for the object. */
-  def rules: JsObject
+  def rules(): Generator[JsObject]
 }
