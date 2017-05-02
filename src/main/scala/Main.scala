@@ -21,6 +21,7 @@ package com.bloomlife.fbrules
 import play.api.libs.json._
 
 import com.bloomlife.fbrules.types._
+import com.bloomlife.fbrules.Implicits._
 
 object Main {
   def main(args: Array[String]) {
@@ -43,5 +44,10 @@ object Main {
 
     val rules = Rules.generate(schema)
     println(Json.prettyPrint(rules))
+
+    val v1: IntValue = 17 + 12
+    val v2: IntValue = "Hello".length
+    val cond: BoolValue = v1 / 12 === v2 === false
+    println(cond.toJS)
   }
 }

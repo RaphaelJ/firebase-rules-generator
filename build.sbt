@@ -9,6 +9,9 @@ lazy val root = (project in file(".")).
     )),
     name := "Firebase Rules Generator",
 
+    // Allows the use of higher-kinded types.
+    scalacOptions += "-feature",
+
     libraryDependencies ++= Seq(
       "com.typesafe.play" % "play-json_2.12" % "2.6.0-M7",
       "org.scalaz" % "scalaz-core_2.12" % "7.2.11"
