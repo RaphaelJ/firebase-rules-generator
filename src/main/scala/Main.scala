@@ -30,10 +30,10 @@ object Main {
       )
 
     val userDef = FbObject(
-      "name" -> FbRequired(FbString(minLength=Some(4), maxLength=Some(64))),
+      "name"  -> FbRequired(FbString(minLength=Some(4), maxLength=Some(64))),
       "email" -> FbRequired(FbString()),
-      "age" -> FbOptional(FbInteger(min=Some(18))),
-      "msgs" -> FbOptional(FbCollection(mesgId => msgDef))
+      "age"   -> FbOptional(FbInteger(min=Some(18))),
+      "msgs"  -> FbOptional(FbCollection(mesgId => msgDef))
       )
 
     val schema = FbObject(
@@ -47,7 +47,8 @@ object Main {
 
     val v1: IntValue = 17 + 12
     val v2: IntValue = "Hello".length
-    val cond: BoolValue = v1 / 12 === v2 === false
+    val v3 = Auth.token.email.matches("/^(.+)@(.+).(.+)/").not
+    val cond: BoolValue = v1 / 12 === v2 && Auth.uid === "12345654321" || v3
     println(cond.toJS)
   }
 }

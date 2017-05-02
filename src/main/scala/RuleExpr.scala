@@ -32,7 +32,9 @@ sealed trait Value extends RuleExpr {
 
 // Base traits for values
 
+/** Expressions that can be compared with themselves. */
 sealed trait Equalable extends Value {
+  /** The type of the expression. */
   type Self <: Value
 
   def ===(other: Self) = {
@@ -42,7 +44,7 @@ sealed trait Equalable extends Value {
 }
 
 /** Any expression that returns a boolean value. */
-sealed trait BoolValue extends Value with Equalable {
+sealed trait BoolValue extends Equalable {
   type Self = BoolValue
 
   def &&(other: BoolValue) = {
@@ -100,7 +102,7 @@ sealed trait IntValue extends Value with Equalable {
 sealed trait StringValue extends Value with Equalable {
   type Self = StringValue
 
-  def length: IntValue = {
+  def length = {
     val js = this.toJS
     new IntValue() { def toJS = s"${js}.length" }
   }
@@ -123,6 +125,11 @@ sealed trait StringValue extends Value with Equalable {
   def matches(regex: String) = {
     val js = this.toJS
     new BoolValue() { def toJS = s"${js}.match(${regex})" }
+  }
+
+  def +(other: StringValue) = {
+    val js = this.toJS
+    new StringValue() { def toJS = s"(${js}+${other.toJS})" }
   }
 }
 
@@ -148,4 +155,26 @@ object Implicits {
   implicit def fromInt(value: Int) = IntLiteral(value)
 
   implicit def fromString(value: String) = StringLiteral(value)
+}
+
+// `auth` object
+
+object Auth {
+  def provider = new StringValue() { def toJS = "auth.provider" }
+
+  def uid = new StringValue() { def toJS = "auth.uid" }
+
+  object Token {
+    def email = new StringValue() { def toJS = "auth.token.email" }
+
+    def emailVerified = new BoolValue() {
+      def toJS = "auth.token.email_verified"
+    }
+
+    def name = new StringValue() { def toJS = "auth.token.name" }
+
+    def sub = new StringValue() { def toJS = "auth.token.sub" }
+  }
+
+  def token = Token
 }
