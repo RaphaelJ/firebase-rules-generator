@@ -178,3 +178,65 @@ object Auth {
 
   def token = Token
 }
+
+// Data snapshots
+
+/** Contains a snapshot of the data at the given path.
+ *
+ *  @param origin the reference node that is used as the root of the path.
+ *  @param moves the moves to be applied to the reference node, in reverse
+ *               order.
+ */
+case class DataSnapshot(origin: OriginNode, moves: Seq[PathMove] = Seq.empty)
+  extends RuleExpr {
+
+  /** Generates the Javascript expression to the referenced node */
+  private def _jsPath: String = {
+    val originPath = origin.toJSPath
+    val movePath = moves.reverse.
+      map(_.toJSPath).
+      mkString(".")
+
+    s"${originPath}.${movePath}"
+  }
+
+  def child(node: String) = copy(moves=Child(node) +: moves)
+
+  def /(node: String) = child(node)
+
+  def parent = {
+    // If the last move is a child, just removes it.
+    moves match {
+      case Child(_) :: tail => copy(moves=tail)
+      case _                => copy(moves=Parent() +: moves)
+    }
+  }
+
+  def asBoolean = new BoolValue() { def toJS = s"${_jsPath}.val()" }
+
+  def asNumber = new IntValue() { def toJS = s"${_jsPath}.val()" }
+
+  def asString = new StringValue() { def toJS = s"${_jsPath}.val()" }
+}
+
+sealed trait OriginNode { def toJSPath: String }
+
+object DataNode extends OriginNode { def toJSPath = "data" }
+
+object NewDataNode extends OriginNode { def toJSPath = "newData" }
+
+object RootNode extends OriginNode { def toJSPath = "root" }
+
+object Data extends DataSnapshot(DataNode)
+
+object NewData extends DataSnapshot(NewDataNode)
+
+object Root extends DataSnapshot(RootNode)
+
+sealed trait PathMove { def toJSPath: String }
+
+case class Child(name: String) extends PathMove {
+  def toJSPath = s"child('${name}')"
+}
+
+case class Parent() extends PathMove { def toJSPath = s"parent()" }

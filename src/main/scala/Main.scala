@@ -48,7 +48,9 @@ object Main {
     val v1: IntValue = 17 + 12
     val v2: IntValue = "Hello".length
     val v3 = Auth.token.email.matches("/^(.+)@(.+).(.+)/").not
-    val cond: BoolValue = v1 / 12 === v2 && Auth.uid === "12345654321" || v3
+    val v4 = ((NewData / "user" / "isAdmin").parent / "exists").asBoolean
+    val v5 = (NewData.parent.parent.parent).asBoolean
+    val cond: BoolValue = v1 / 12 === v2 && Auth.uid === "12345654321" || v3 || v4 || v5
     println(cond.toJS)
   }
 }
