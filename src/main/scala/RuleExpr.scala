@@ -179,6 +179,12 @@ object Auth {
   def token = Token
 }
 
+// $location's variables
+
+case class LocationVariable(name: String) extends StringValue {
+  def toJS = s"$$${name}"
+}
+
 // Data snapshots
 
 /** Contains a snapshot of the data at the given path.

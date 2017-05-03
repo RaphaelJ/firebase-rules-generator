@@ -22,16 +22,17 @@ import play.api.libs.json._
 import scalaz.State.{get, put}
 
 import com.bloomlife.fbrules.Rules.Generator
+import com.bloomlife.fbrules.LocationVariable
 
-case class FbCollection(coll: String => FbNode) extends FbNode {
+case class FbCollection(coll: LocationVariable => FbNode) extends FbNode {
   def rules: Generator[JsObject] =
     for {
-      // Generates a new `$id` for the rules.
+      // Generates a new `$location` variable.
       currId <- get
       _ <- put(currId + 1)
       currIdStr = s"$$id_${currId}"
 
-      nestedRules <- coll(currIdStr).rules
+      nestedRules <- coll(LocationVariable(currIdStr)).rules
     } yield {
       JsObject(Seq(currIdStr -> nestedRules))
     }
