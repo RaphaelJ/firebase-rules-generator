@@ -24,18 +24,16 @@ import scala.language.implicitConversions
  *  used to define validation rules as defined in
  *  <https://firebase.google.com/docs/reference/security/database/>.
  */
-sealed trait RuleExpr
-
-sealed trait Value extends RuleExpr {
+sealed trait RuleExpr {
   def toJS: String
 }
 
 // Base traits for values
 
 /** Expressions that can be compared with themselves. */
-sealed trait Equalable extends Value {
+sealed trait EqualableExpr extends RuleExpr {
   /** The type of the expression. */
-  type Self <: Value
+  type Self <: RuleExpr
 
   def ===(other: Self) = {
     val js = this.toJS
@@ -44,7 +42,7 @@ sealed trait Equalable extends Value {
 }
 
 /** Any expression that returns a boolean value. */
-sealed trait BoolValue extends Equalable {
+sealed trait BoolValue extends EqualableExpr {
   type Self = BoolValue
 
   def &&(other: BoolValue) = {
@@ -62,6 +60,7 @@ sealed trait BoolValue extends Equalable {
     new BoolValue() { def toJS = s"(!${js})" }
   }
 
+  // TODO: implement the ternary operator.
   // def ifelse[T <: RuleExpr](ifTrue: T, ifFalse: T) = {
   //   val js = this.toJS
   //   new T() { def toJS = s"(${js}?${ifTrue.toJS}:${ifFalse.toJS})" }
@@ -69,7 +68,7 @@ sealed trait BoolValue extends Equalable {
 }
 
 /** Any expression that returns an integer value. */
-sealed trait IntValue extends Value with Equalable {
+sealed trait IntValue extends EqualableExpr {
   type Self = IntValue
 
   def +(other: IntValue) = {
@@ -99,7 +98,7 @@ sealed trait IntValue extends Value with Equalable {
 }
 
 /** Any expression that returns a string value. */
-sealed trait StringValue extends Value with Equalable {
+sealed trait StringValue extends EqualableExpr {
   type Self = StringValue
 
   def length = {
@@ -193,8 +192,7 @@ case class LocationVariable(name: String) extends StringValue {
  *  @param moves the moves to be applied to the reference node, in reverse
  *               order.
  */
-case class DataSnapshot(origin: OriginNode, moves: Seq[PathMove] = Seq.empty)
-  extends RuleExpr {
+case class DataSnapshot(origin: OriginNode, moves: Seq[PathMove] = Seq.empty) {
 
   /** Generates the Javascript expression to the referenced node */
   private def _jsPath: String = {
