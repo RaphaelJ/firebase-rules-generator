@@ -212,9 +212,35 @@ case class DataSnapshot(origin: OriginNode, moves: Seq[PathMove] = Seq.empty)
     }
   }
 
+  def hasChild(childPath: StringValue) = new BoolValue() {
+    def toJS = s"${_jsPath}.hasChild('${childPath}')"
+  }
+
+  /** Returns a true value if the node has any children. */
+  def hasChildren = new BoolValue() { def toJS = s"${_jsPath}.hasChildren()" }
+
+  /** Returns a true value if the node has all the listed children. */
+  def hasChildren(children: Seq[StringValue]) = new BoolValue() {
+    def toJS = {
+      val childrenStr = children.
+        map(child => s"'${child.toJS}'").
+        mkString(",")
+
+      s"${_jsPath}.hasChildren(${childrenStr})"
+    }
+  }
+
+  def exists = new BoolValue() { def toJS = s"${_jsPath}.exists()" }
+
+  def isBoolean = new BoolValue() { def toJS = s"${_jsPath}.isBoolean()" }
+
   def asBoolean = new BoolValue() { def toJS = s"${_jsPath}.val()" }
 
+  def isNumber = new BoolValue() { def toJS = s"${_jsPath}.isNumber()" }
+
   def asNumber = new IntValue() { def toJS = s"${_jsPath}.val()" }
+
+  def isString = new BoolValue() { def toJS = s"${_jsPath}.isString()" }
 
   def asString = new StringValue() { def toJS = s"${_jsPath}.val()" }
 }

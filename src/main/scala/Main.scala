@@ -50,7 +50,9 @@ object Main {
     val v3 = Auth.token.email.matches("/^(.+)@(.+).(.+)/").not
     val v4 = ((NewData / "user" / "isAdmin").parent / "exists").asBoolean
     val v5 = (NewData.parent.parent.parent).asBoolean
-    val cond: BoolValue = v1 / 12 === v2 && Auth.uid === "12345654321" || v3 || v4 || v5
+    val v6 = (NewData.parent / "isAdmin").exists
+    val v7 = (NewData.parent / "isAdmin").isString
+    val cond: BoolValue = v1 / 12 === v2 || v3 || v4 || v5 || v6 || v7
     println(cond.toJS)
   }
 }
