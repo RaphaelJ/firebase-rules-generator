@@ -22,7 +22,7 @@ import play.api.libs.json._
 import scalaz.State.{get, put}
 
 import com.bloomlife.fbrules.Rules.Generator
-import com.bloomlife.fbrules.LocationVariable
+import com.bloomlife.fbrules.ruleexpr.LocationVariable
 
 case class FbCollection(coll: LocationVariable => FbNode) extends FbNode {
   def rules: Generator[JsObject] =

@@ -20,8 +20,9 @@ package com.bloomlife.fbrules
 
 import play.api.libs.json._
 
+import com.bloomlife.fbrules.ruleexpr._
+import com.bloomlife.fbrules.ruleexpr.Implicits._
 import com.bloomlife.fbrules.types._
-import com.bloomlife.fbrules.Implicits._
 
 object Main {
   def main(args: Array[String]) {
