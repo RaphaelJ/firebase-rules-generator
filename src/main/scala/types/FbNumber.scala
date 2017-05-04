@@ -19,21 +19,20 @@
 package com.bloomlife.fbrules.types
 
 import com.bloomlife.fbrules.Rules.Generator
+import com.bloomlife.fbrules.ruleexpr.{NewData}
+import com.bloomlife.fbrules.ruleexpr.Implicits._
 
-case class FbInteger(min: Option[Long] = None, max: Option[Long] = None)
-  extends FbField {
-
-  def validate: Option[String] = {
-    var constraints = Seq("newData.isInteger")
+case class FbNumber(min: Option[Double] = None, max: Option[Double] = None)
+  extends FbField({
+    var constraint = NewData.isNumber
 
     if (min.isDefined) {
-      constraints :+= s"newData.val() >= ${min.get}"
+      constraint = constraint && NewData.asNumber >= min.get
     }
 
     if (max.isDefined) {
-      constraints :+= s"newData.val() <= ${max.get}"
+      constraint = constraint && NewData.asNumber <= max.get
     }
 
-    Some(constraints.mkString(" && "))
-  }
-}
+    Some(constraint)
+  })

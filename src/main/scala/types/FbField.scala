@@ -22,18 +22,23 @@ import play.api.libs.json._
 import scalaz.syntax.applicative._
 
 import com.bloomlife.fbrules.Rules.Generator
+import com.bloomlife.fbrules.ruleexpr.BoolExpr
 
-trait FbField extends FbNode {
-  /** Returns a Javascript expression that validates the field's content. */
-  def validate: Option[String]
+/**
+ *  @param validate a Javascript expression that validates the field's content.
+ */
+abstract class FbField(validate: Option[BoolExpr]) extends FbNode {
+  def validateIf(newCond: BoolExpr): FbField = new FbField(
+    validate match {
+      case Some(cond) => Some(cond && newCond)
+      case None       => Some(newCond)
+    }
+  ) { }
 
   override def rules: Generator[JsObject] = {
-    val validateStr = this.validate
-
-    if (validateStr.isDefined) {
-      JsObject(Seq(".validate" -> JsString(validateStr.get)))
-    } else {
-      JsObject(Seq())
+    validate match {
+      case Some(cond) => JsObject(Seq(".validate" -> JsString(cond.toJS)))
+      case None       => JsObject(Seq())
     }
   }.pure[Generator]
 }

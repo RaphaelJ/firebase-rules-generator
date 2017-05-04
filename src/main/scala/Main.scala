@@ -32,8 +32,10 @@ object Main {
 
     val userDef = FbObject(
       "name"  -> FbRequired(FbString(minLength=Some(4), maxLength=Some(64))),
-      "email" -> FbRequired(FbString()),
-      "age"   -> FbOptional(FbInteger(min=Some(18))),
+      "email" -> FbRequired(
+        FbString().validateIf(NewData.asString.matches("/^(.+)@(.+).(.+)/"))
+      ),
+      "age"   -> FbOptional(FbNumber(min=Some(18))),
       "msgs"  -> FbOptional(FbCollection(mesgId => msgDef))
       )
 
@@ -46,14 +48,14 @@ object Main {
     val rules = Rules.generate(schema)
     println(Json.prettyPrint(rules))
 
-    val v1: IntValue = 17 + 12
-    val v2: IntValue = "Hello".length
+    val v1 = 17 + 12
+    val v2 = "Hello".length
     val v3 = Auth.token.email.matches("/^(.+)@(.+).(.+)/").not
     val v4 = ((NewData / "user" / "isAdmin").parent / "exists").asBoolean
     val v5 = (NewData.parent.parent.parent).asBoolean
     val v6 = (NewData.parent / "isAdmin").exists
     val v7 = (NewData.parent / "isAdmin").isString
-    val cond: BoolValue = v1 / 12 === v2 || v3 || v4 || v5 || v6 || v7
+    val cond: BoolExpr = v1 / 12 === v2 || v3 || v4 || v5 || v6 || v7
     println(cond.toJS)
   }
 }

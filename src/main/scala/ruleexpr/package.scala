@@ -37,27 +37,27 @@ sealed trait EqualableExpr extends RuleExpr {
 
   def ===(other: Self) = {
     val js = this.toJS
-    new BoolValue() { def toJS = s"(${js}===${other.toJS})" }
+    new BoolExpr() { def toJS = s"(${js}===${other.toJS})" }
   }
 }
 
 /** Any expression that returns a boolean value. */
-sealed trait BoolValue extends EqualableExpr {
-  type Self = BoolValue
+sealed trait BoolExpr extends EqualableExpr {
+  type Self = BoolExpr
 
-  def &&(other: BoolValue) = {
+  def &&(other: BoolExpr) = {
     val js = this.toJS
-    new BoolValue() { def toJS = s"(${js}&&${other.toJS})" }
+    new BoolExpr() { def toJS = s"(${js}&&${other.toJS})" }
   }
 
-  def ||(other: BoolValue) = {
+  def ||(other: BoolExpr) = {
     val js = this.toJS
-    new BoolValue() { def toJS = s"(${js}||${other.toJS})" }
+    new BoolExpr() { def toJS = s"(${js}||${other.toJS})" }
   }
 
   def not = {
     val js = this.toJS
-    new BoolValue() { def toJS = s"(!${js})" }
+    new BoolExpr() { def toJS = s"(!${js})" }
   }
 
   // TODO: implement the ternary operator.
@@ -67,82 +67,106 @@ sealed trait BoolValue extends EqualableExpr {
   // }
 }
 
-/** Any expression that returns an integer value. */
-sealed trait IntValue extends EqualableExpr {
-  type Self = IntValue
+/** Any expression that returns an numeric value. */
+sealed trait NumberExpr extends EqualableExpr {
+  type Self = NumberExpr
 
-  def +(other: IntValue) = {
+  def +(other: NumberExpr) = {
     val js = this.toJS
-    new IntValue() { def toJS = s"(${js}+${other.toJS})" }
+    new NumberExpr() { def toJS = s"(${js}+${other.toJS})" }
   }
 
-  def -(other: IntValue) = {
+  def -(other: NumberExpr) = {
     val js = this.toJS
-    new IntValue() { def toJS = s"(${js}-${other.toJS})" }
+    new NumberExpr() { def toJS = s"(${js}-${other.toJS})" }
   }
 
-  def *(other: IntValue) = {
+  def *(other: NumberExpr) = {
     val js = this.toJS
-    new IntValue() { def toJS = s"(${js}*${other.toJS})" }
+    new NumberExpr() { def toJS = s"(${js}*${other.toJS})" }
   }
 
-  def /(other: IntValue) = {
+  def /(other: NumberExpr) = {
     val js = this.toJS
-    new IntValue() { def toJS = s"(${js}/${other.toJS})" }
+    new NumberExpr() { def toJS = s"(${js}/${other.toJS})" }
   }
 
-  def %(other: IntValue) = {
+  def %(other: NumberExpr) = {
     val js = this.toJS
-    new IntValue() { def toJS = s"(${js}%${other.toJS})" }
+    new NumberExpr() { def toJS = s"(${js}%${other.toJS})" }
+  }
+
+  def >(other: NumberExpr) = {
+    val js = this.toJS
+    new BoolExpr() { def toJS = s"(${js}>${other.toJS})" }
+  }
+
+  def <(other: NumberExpr) = {
+    val js = this.toJS
+    new BoolExpr() { def toJS = s"(${js}<${other.toJS})" }
+  }
+
+  def >=(other: NumberExpr) = {
+    val js = this.toJS
+    new BoolExpr() { def toJS = s"(${js}>=${other.toJS})" }
+  }
+
+  def <=(other: NumberExpr) = {
+    val js = this.toJS
+    new BoolExpr() { def toJS = s"(${js}<=${other.toJS})" }
   }
 }
 
 /** Any expression that returns a string value. */
-sealed trait StringValue extends EqualableExpr {
-  type Self = StringValue
+sealed trait StringExpr extends EqualableExpr {
+  type Self = StringExpr
 
   def length = {
     val js = this.toJS
-    new IntValue() { def toJS = s"${js}.length" }
+    new NumberExpr() { def toJS = s"${js}.length" }
   }
 
-  def contains(str: StringValue) = {
+  def contains(str: StringExpr) = {
     val js = this.toJS
-    new BoolValue() { def toJS = s"${js}.contains(${str.toJS})" }
+    new BoolExpr() { def toJS = s"${js}.contains(${str.toJS})" }
   }
 
-  def beginWith(str: StringValue) = {
+  def beginWith(str: StringExpr) = {
     val js = this.toJS
-    new BoolValue() { def toJS = s"${js}.beginWith(${str.toJS})" }
+    new BoolExpr() { def toJS = s"${js}.beginWith(${str.toJS})" }
   }
 
-  def endsWith(str: StringValue) = {
+  def endsWith(str: StringExpr) = {
     val js = this.toJS
-    new BoolValue() { def toJS = s"${js}.endsWith(${str.toJS})" }
+    new BoolExpr() { def toJS = s"${js}.endsWith(${str.toJS})" }
   }
 
   def matches(regex: String) = {
     val js = this.toJS
-    new BoolValue() { def toJS = s"${js}.match(${regex})" }
+    new BoolExpr() { def toJS = s"${js}.matches(${regex})" }
   }
 
-  def +(other: StringValue) = {
+  def +(other: StringExpr) = {
     val js = this.toJS
-    new StringValue() { def toJS = s"(${js}+${other.toJS})" }
+    new StringExpr() { def toJS = s"(${js}+${other.toJS})" }
   }
 }
 
 // Literals
 
-case class BoolLiteral(value: Boolean) extends BoolValue {
+case class BoolLiteral(value: Boolean) extends BoolExpr {
   def toJS = s"${value}"
 }
 
-case class IntLiteral(value: Int) extends IntValue {
+case class IntLiteral(value: Int) extends NumberExpr {
   def toJS = s"${value}"
 }
 
-case class StringLiteral(value: String) extends StringValue {
+case class DoubleLiteral(value: Double) extends NumberExpr {
+  def toJS = s"${value}"
+}
+
+case class StringLiteral(value: String) extends StringExpr {
   def toJS = s"'${value}'"
 }
 
@@ -153,26 +177,28 @@ object Implicits {
 
   implicit def fromInt(value: Int) = IntLiteral(value)
 
+  implicit def fromDouble(value: Double) = DoubleLiteral(value)
+
   implicit def fromString(value: String) = StringLiteral(value)
 }
 
 // `auth` object
 
 object Auth {
-  def provider = new StringValue() { def toJS = "auth.provider" }
+  def provider = new StringExpr() { def toJS = "auth.provider" }
 
-  def uid = new StringValue() { def toJS = "auth.uid" }
+  def uid = new StringExpr() { def toJS = "auth.uid" }
 
   object Token {
-    def email = new StringValue() { def toJS = "auth.token.email" }
+    def email = new StringExpr() { def toJS = "auth.token.email" }
 
-    def emailVerified = new BoolValue() {
+    def emailVerified = new BoolExpr() {
       def toJS = "auth.token.email_verified"
     }
 
-    def name = new StringValue() { def toJS = "auth.token.name" }
+    def name = new StringExpr() { def toJS = "auth.token.name" }
 
-    def sub = new StringValue() { def toJS = "auth.token.sub" }
+    def sub = new StringExpr() { def toJS = "auth.token.sub" }
   }
 
   def token = Token
@@ -180,7 +206,7 @@ object Auth {
 
 // $location's variables
 
-case class LocationVariable(name: String) extends StringValue {
+case class LocationVariable(name: String) extends StringExpr {
   def toJS = s"$$${name}"
 }
 
@@ -197,11 +223,16 @@ case class DataSnapshot(origin: OriginNode, moves: Seq[PathMove] = Seq.empty) {
   /** Generates the Javascript expression to the referenced node */
   private def _jsPath: String = {
     val originPath = origin.toJSPath
-    val movePath = moves.reverse.
-      map(_.toJSPath).
-      mkString(".")
 
-    s"${originPath}.${movePath}"
+    if (moves.isEmpty) {
+      originPath
+    } else {
+      val movePath = moves.reverse.
+        map(_.toJSPath).
+        mkString(".")
+
+      s"${originPath}.${movePath}"
+    }
   }
 
   def child(node: String) = copy(moves=Child(node) +: moves)
@@ -216,15 +247,15 @@ case class DataSnapshot(origin: OriginNode, moves: Seq[PathMove] = Seq.empty) {
     }
   }
 
-  def hasChild(childPath: StringValue) = new BoolValue() {
+  def hasChild(childPath: StringExpr) = new BoolExpr() {
     def toJS = s"${_jsPath}.hasChild('${childPath}')"
   }
 
   /** Returns a true value if the node has any children. */
-  def hasChildren = new BoolValue() { def toJS = s"${_jsPath}.hasChildren()" }
+  def hasChildren = new BoolExpr() { def toJS = s"${_jsPath}.hasChildren()" }
 
   /** Returns a true value if the node has all the listed children. */
-  def hasChildren(children: Seq[StringValue]) = new BoolValue() {
+  def hasChildren(children: Seq[StringExpr]) = new BoolExpr() {
     def toJS = {
       val childrenStr = children.
         map(child => s"'${child.toJS}'").
@@ -234,19 +265,19 @@ case class DataSnapshot(origin: OriginNode, moves: Seq[PathMove] = Seq.empty) {
     }
   }
 
-  def exists = new BoolValue() { def toJS = s"${_jsPath}.exists()" }
+  def exists = new BoolExpr() { def toJS = s"${_jsPath}.exists()" }
 
-  def isBoolean = new BoolValue() { def toJS = s"${_jsPath}.isBoolean()" }
+  def isBoolean = new BoolExpr() { def toJS = s"${_jsPath}.isBoolean()" }
 
-  def asBoolean = new BoolValue() { def toJS = s"${_jsPath}.val()" }
+  def asBoolean = new BoolExpr() { def toJS = s"${_jsPath}.val()" }
 
-  def isNumber = new BoolValue() { def toJS = s"${_jsPath}.isNumber()" }
+  def isNumber = new BoolExpr() { def toJS = s"${_jsPath}.isNumber()" }
 
-  def asNumber = new IntValue() { def toJS = s"${_jsPath}.val()" }
+  def asNumber = new NumberExpr() { def toJS = s"${_jsPath}.val()" }
 
-  def isString = new BoolValue() { def toJS = s"${_jsPath}.isString()" }
+  def isString = new BoolExpr() { def toJS = s"${_jsPath}.isString()" }
 
-  def asString = new StringValue() { def toJS = s"${_jsPath}.val()" }
+  def asString = new StringExpr() { def toJS = s"${_jsPath}.val()" }
 }
 
 sealed trait OriginNode { def toJSPath: String }

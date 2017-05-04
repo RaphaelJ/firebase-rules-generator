@@ -19,22 +19,21 @@
 package com.bloomlife.fbrules.types
 
 import com.bloomlife.fbrules.Rules.Generator
+import com.bloomlife.fbrules.ruleexpr.{NewData}
+import com.bloomlife.fbrules.ruleexpr.Implicits._
 
 case class FbString(
-  minLength: Option[Long] = None, maxLength: Option[Long] = None)
-  extends FbField {
-
-  def validate: Option[String] = {
-    var constraints = Seq("newData.isString")
+  minLength: Option[Int] = None, maxLength: Option[Int] = None)
+  extends FbField({
+    var constraint = NewData.isString
 
     if (minLength.isDefined) {
-      constraints :+= s"newData.val().length >= ${minLength.get}"
+      constraint = constraint && NewData.asString.length >= minLength.get
     }
 
     if (maxLength.isDefined) {
-      constraints :+= s"newData.val().length <= ${maxLength.get}"
+      constraint = constraint && NewData.asString.length <= maxLength.get
     }
 
-    Some(constraints.mkString(" && "))
-  }
-}
+    Some(constraint)
+  })
