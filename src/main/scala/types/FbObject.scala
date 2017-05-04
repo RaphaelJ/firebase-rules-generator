@@ -45,10 +45,11 @@ case class FbObject(childs: (String, FbObjectField)*) extends FbNode {
         (".validate" -> JsString(s"newData.hasChildren([${requiredFields}])")) ::
         ("$other" -> Json.toJson(Map(".validate" -> JsFalse))) ::
         childRules
-        )
+      )
     }
   }
 }
+
 
 sealed trait FbObjectField {
   val node: FbNode
@@ -61,4 +62,15 @@ case class FbRequired(node: FbNode) extends FbObjectField {
 
 case class FbOptional(node: FbNode) extends FbObjectField {
   val required = false
+}
+
+// Implicits
+
+object Implicits {
+  /** Utility class to help creating `FbRequired` and `FbOptional` fields. */
+  implicit class FbObjectFieldTitle(value: String) {
+    def :=(node: FbNode): (String, FbRequired) = value -> FbRequired(node)
+
+    def ?=(node: FbNode): (String, FbOptional) = value -> FbOptional(node)
+  }
 }
