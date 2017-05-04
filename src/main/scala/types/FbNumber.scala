@@ -23,7 +23,7 @@ import com.bloomlife.fbrules.ruleexpr.{NewData}
 import com.bloomlife.fbrules.ruleexpr.Implicits._
 
 case class FbNumber(min: Option[Double] = None, max: Option[Double] = None)
-  extends FbField({
+  extends FbNode(validate={
     var constraint = NewData.isNumber
 
     if (min.isDefined) {

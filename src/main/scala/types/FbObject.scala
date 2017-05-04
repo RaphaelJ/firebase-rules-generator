@@ -23,33 +23,38 @@ import scalaz.std.list._
 import scalaz.syntax.traverse._
 
 import com.bloomlife.fbrules.Rules.Generator
+import com.bloomlife.fbrules.ruleexpr.{NewData}
+import com.bloomlife.fbrules.ruleexpr.Implicits._
 
-case class FbObject(childs: (String, FbObjectField)*) extends FbNode {
+case class FbObject(children: (String, FbObjectField)*)
+  extends FbNode(validate={
+    // Must have all the required child field.
+    val childNames = children.map(child => fromString(child._1)).toSeq
+    Some(NewData.hasChildren(childNames))
+  }) {
+
   override def rules: Generator[JsObject] = {
+    // Adds the children rules to the node's rules.
     for {
+      parentRules <- super.rules
+
       // Recursively generates the rules for the children.
-      childRules <- childs.
-        toList.
-        traverseS {
+      childrenRules <-
+        children.toList.
+          traverseS {
           case (key, child) =>
             for (rules <- child.node.rules) yield (key -> rules)
-        }
-    } yield {
-      val requiredFields = childs.
-        filter(_._2.required).
-        map { case (key, _)  => s"'${key}'" }.
-        mkString(",")
+          }.
+          map(JsObject(_))
 
-      JsObject(
-        // Does not allow any other field.
-        (".validate" -> JsString(s"newData.hasChildren([${requiredFields}])")) ::
-        ("$other" -> Json.toJson(Map(".validate" -> JsFalse))) ::
-        childRules
-      )
+      // Generates a node that never validates, to only allow the previously
+      // allowed field names.
+      invalidNodeRules <- (new FbNode(validate=Some(false)) {}).rules
+    } yield {
+      childrenRules ++ invalidNodeRules ++ parentRules
     }
   }
 }
-
 
 sealed trait FbObjectField {
   val node: FbNode

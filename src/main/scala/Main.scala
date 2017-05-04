@@ -41,7 +41,10 @@ object Main {
 
     val schema = FbObject(
       "users"     ?= FbCollection(userId => userDef),
-      "messages"  ?= FbCollection(userId => FbCollection(msgId => msgDef))
+      "messages"  ?= FbCollection(
+        userId => FbCollection(msgId => msgDef).
+          validateIf(userId == Auth.uid)
+      )
       )
 
     val rules = Rules.generate(schema)

@@ -25,8 +25,12 @@ import com.bloomlife.fbrules.Rules.Generator
 import com.bloomlife.fbrules.ruleexpr.LocationVariable
 
 case class FbCollection(coll: LocationVariable => FbNode) extends FbNode {
-  def rules: Generator[JsObject] =
+  override def rules: Generator[JsObject] = {
+    // Adds a `'$location': {..}` node to the node's rules.
+
     for {
+      parentRules <- super.rules
+
       // Generates a new `$location` variable.
       currId <- get
       _ <- put(currId + 1)
@@ -34,6 +38,7 @@ case class FbCollection(coll: LocationVariable => FbNode) extends FbNode {
 
       nestedRules <- coll(LocationVariable(currIdStr)).rules
     } yield {
-      JsObject(Seq(currIdStr -> nestedRules))
+      parentRules + (currIdStr -> nestedRules)
     }
+  }
 }

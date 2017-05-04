@@ -24,7 +24,7 @@ import com.bloomlife.fbrules.ruleexpr.Implicits._
 
 case class FbString(
   minLength: Option[Int] = None, maxLength: Option[Int] = None)
-  extends FbField({
+  extends FbNode(validate={
     var constraint = NewData.isString
 
     if (minLength.isDefined) {
