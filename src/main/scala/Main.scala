@@ -32,10 +32,11 @@ object Main {
       )
 
     val userDef = FbObject(
-      "name"      := FbString(minLength=Some(4), maxLength=Some(64)),
-      "email"     := FbString(),
-      "age"       ?= FbNumber(min=Some(18)),
-      "msgs"      ?= FbCollection(mesgId => msgDef)
+      "name"        := FbString(minLength=Some(4), maxLength=Some(64)),
+      "email"       := FbString(),
+      "age"         ?= FbNumber(min=Some(18)),
+      "birth_date"  ?= FbDate(),
+      "msgs"        ?= FbCollection(mesgId => msgDef)
       )
 
     val schema = FbObject(

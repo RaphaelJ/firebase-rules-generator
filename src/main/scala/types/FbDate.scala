@@ -18,29 +18,8 @@
 
 package com.bloomlife.fbrules.types
 
-import com.bloomlife.fbrules.Rules.Generator
-import com.bloomlife.fbrules.ruleexpr.{NewData}
-import com.bloomlife.fbrules.ruleexpr.Implicits._
-
-object FbString {
-  def apply(
-    minLength: Option[Int] = None, maxLength: Option[Int] = None,
-    regex: Option[String] = None): FbNode = {
-
-    var node = FbNode().validateIf(NewData.isString)
-
-    if (minLength.isDefined) {
-      node = node.validateIf(NewData.asString.length >= minLength.get)
-    }
-
-    if (maxLength.isDefined) {
-      node = node.validateIf(NewData.asString.length <= maxLength.get)
-    }
-
-    if (regex.isDefined) {
-      node = node.validateIf(NewData.asString.matches(regex.get))
-    }
-
-    node
-  }
+object FbDate {
+  /** Creates a `FbNode` that only accepts ISO 8601-formated dates (YYYY-MM-DD).
+   */
+  def apply(): FbNode = FbString(regex=Some("/\\d{4}-[01]\\d-[0-3]\\d/"))
 }
