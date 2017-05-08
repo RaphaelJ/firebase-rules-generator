@@ -22,17 +22,18 @@ import com.bloomlife.fbrules.Rules.Generator
 import com.bloomlife.fbrules.ruleexpr.{NewData}
 import com.bloomlife.fbrules.ruleexpr.Implicits._
 
-case class FbNumber(min: Option[Double] = None, max: Option[Double] = None)
-  extends FbNode(validate={
-    var constraint = NewData.isNumber
+object FbNumber {
+  def apply(min: Option[Double] = None, max: Option[Double] = None): FbNode = {
+    var node = FbNode().validateIf(NewData.isNumber)
 
     if (min.isDefined) {
-      constraint = constraint && NewData.asNumber >= min.get
+      node = node.validateIf(NewData.asNumber >= min.get)
     }
 
     if (max.isDefined) {
-      constraint = constraint && NewData.asNumber <= max.get
+      node = node.validateIf(NewData.asNumber <= max.get)
     }
 
-    Some(constraint)
-  })
+    node
+  }
+}

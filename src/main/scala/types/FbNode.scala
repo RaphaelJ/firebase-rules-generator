@@ -26,47 +26,75 @@ import com.bloomlife.fbrules.ruleexpr.BoolExpr
 
 /** Base type for nodes of the Firebase schema.
  *
- *  @param validate a Javascript expression that validates the field's content.
+ *  @param validate a Javascript expression to validate the node's content.
+ *  @param read a Javascript expression to allow to read the node's content.
+ *  @param write a Javascript expression to allow to write the node's content.
+ *  @param customRules an additional rule generator that will provide additional
+ *                     rules than those generated for `validate`, `read` and
+ *                     `write`.
+ *
+ *  {{{
+ *    val stringNode = FbNode().validateIf(NewData.isString))
+ *    val dateNode = stringNode.validateIf(
+ *      NewData.asString.matches("/^[0-9]{2}[/][0-9]{2}[/][0-9]{4}$/"))
+ *  }}}
+ *
  */
-abstract class FbNode(
+case class FbNode(
     validate: Option[BoolExpr] = None, read: Option[BoolExpr] = None,
-    write: Option[BoolExpr] = None) {
+    write: Option[BoolExpr] = None,
+    customRules: Generator[JsObject] = JsObject(Seq()).pure[Generator]
+  ) {
 
   /** Generates a new `FbNode` from the current node type that will validate
    *  only if the new node satisfy the current node's condition AND the new
    *  condition. */
-  def validateIf(newCond: BoolExpr): FbNode = new FbNode(validate=
+  def validateIf(newCond: BoolExpr): FbNode = copy(validate=
     validate match {
       case Some(cond) => Some(cond && newCond)
       case None       => Some(newCond)
     }
-  ) { }
+  )
 
-  /** Generates a new `FbNode` from the current node type that will be
-   *  readable only if the new node satisfy the current node's condition OR the
-   *  new condition. */
-  def readIf(newCond: BoolExpr): FbNode = new FbNode(read=
+  /** Generates a new node that will be readable only if the new node satisfy
+   *  the current node's condition OR the new condition. */
+  def readIf(newCond: BoolExpr): FbNode = copy(read=
     read match {
       case Some(cond) => Some(cond || newCond)
       case None       => Some(newCond)
     }
-  ) { }
+  )
 
-  /** Generates a new `FbNode` from the current node type that will be
-   *  writable only if the new node satisfy the current node's condition OR the
-   *  new condition. */
-  def writeIf(newCond: BoolExpr): FbNode = new FbNode(write=
+  /** Generates a new node will be writable only if the new node satisfy the
+   *  current node's condition OR the new condition. */
+  def writeIf(newCond: BoolExpr): FbNode = copy(write=
     write match {
       case Some(cond) => Some(cond || newCond)
       case None       => Some(newCond)
     }
-  ) { }
+  )
+
+  /** Generates a new node that will be readable and writable only if the new
+   *  node satisfy the current node's condition OR the new condition.
+   *
+   *  Same as calling `readIf()` and `writeIf()`.
+   */
+  def accessIf(newCond: BoolExpr): FbNode = readIf(newCond).writeIf(newCond)
 
   /** Generates the Firebase rules for the node. */
   def rules: Generator[JsObject] = {
-    validate match {
-      case Some(cond) => JsObject(Seq(".validate" -> JsString(cond.toJS)))
-      case None       => JsObject(Seq())
+    for {
+      customRulesObj <- customRules
+    } yield {
+      val validateRule =
+        validate.map(cond => ".validate" -> JsString(cond.toJS))
+      val readRule = read.map(cond => ".read" -> JsString(cond.toJS))
+      val writeRule = write.map(cond => ".write" -> JsString(cond.toJS))
+
+      val definedRules = Seq(validateRule, readRule, writeRule).
+        collect({ case Some(rule) => rule })
+
+      JsObject(definedRules) ++ customRulesObj
     }
-  }.pure[Generator]
+  }
 }

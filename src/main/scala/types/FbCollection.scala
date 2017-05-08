@@ -24,21 +24,19 @@ import scalaz.State.{get, put}
 import com.bloomlife.fbrules.Rules.Generator
 import com.bloomlife.fbrules.ruleexpr.LocationVariable
 
-case class FbCollection(coll: LocationVariable => FbNode) extends FbNode {
-  override def rules: Generator[JsObject] = {
-    // Adds a `'$location': {..}` node to the node's rules.
+object FbCollection {
+  def apply(coll: LocationVariable => FbNode): FbNode = {
+    // Adds a `'$location': {..}` node to the default node's rules.
+    val collRules: Generator[JsObject] =
+      for {
+        // Generates a new `$location` variable.
+        currId <- get
+        _ <- put(currId + 1)
+        currIdStr = s"$$id_${currId}"
 
-    for {
-      parentRules <- super.rules
+        nestedRules <- coll(LocationVariable(currIdStr)).rules
+      } yield JsObject(Seq(currIdStr -> nestedRules))
 
-      // Generates a new `$location` variable.
-      currId <- get
-      _ <- put(currId + 1)
-      currIdStr = s"$$id_${currId}"
-
-      nestedRules <- coll(LocationVariable(currIdStr)).rules
-    } yield {
-      parentRules + (currIdStr -> nestedRules)
-    }
+    FbNode(customRules=collRules)
   }
 }

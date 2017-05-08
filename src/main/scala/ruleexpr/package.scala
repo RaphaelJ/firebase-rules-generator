@@ -258,7 +258,7 @@ case class DataSnapshot(origin: OriginNode, moves: Seq[PathMove] = Seq.empty) {
   def hasChildren(children: Seq[StringExpr]) = new BoolExpr() {
     def toJS = {
       val childrenStr = children.
-        map(child => s"'${child.toJS}'").
+        map(child => child.toJS).
         mkString(",")
 
       s"${_jsPath}.hasChildren(${childrenStr})"

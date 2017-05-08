@@ -23,50 +23,56 @@ import scalaz.std.list._
 import scalaz.syntax.traverse._
 
 import com.bloomlife.fbrules.Rules.Generator
-import com.bloomlife.fbrules.ruleexpr.{NewData}
+import com.bloomlife.fbrules.ruleexpr.{BoolExpr, NewData}
 import com.bloomlife.fbrules.ruleexpr.Implicits._
 
-case class FbObject(children: (String, FbObjectField)*)
-  extends FbNode(validate={
-    // Must have all the required child field.
-    val childNames = children.map(child => fromString(child._1)).toSeq
-    Some(NewData.hasChildren(childNames))
-  }) {
+object FbObject {
+  def apply(children: (String, FbObjectField)*): FbNode = {
+    // Requires the required fields to be present
+    val requiredChildNames = children.
+      filter(_._2.isRequired).
+      map(child => fromString(child._1)).
+      toSeq
 
-  override def rules: Generator[JsObject] = {
-    // Adds the children rules to the node's rules.
-    for {
-      parentRules <- super.rules
+    val childrenValidate: Option[BoolExpr] =
+      if (requiredChildNames.isEmpty) {
+        None
+      } else {
+        Some(NewData.hasChildren(requiredChildNames))
+      }
 
-      // Recursively generates the rules for the children.
-      childrenRules <-
-        children.toList.
+    // Generates the nested children rules
+    val childRules: Generator[JsObject] =
+      for {
+        // Recursively generates the rules for the children.
+        childrenRules <- children.
+          toList.
           traverseS {
-          case (key, child) =>
-            for (rules <- child.node.rules) yield (key -> rules)
+            case (key, child) =>
+              for (rules <- child.node.rules) yield (key -> rules)
           }.
           map(JsObject(_))
 
-      // Generates a node that never validates, to only allow the previously
-      // allowed field names.
-      invalidNodeRules <- (new FbNode(validate=Some(false)) {}).rules
-    } yield {
-      childrenRules ++ invalidNodeRules ++ parentRules
-    }
+        // Generates a node that never validates, to only allow the previously
+        // allowed field names.
+        invalidNodeRules <- FbNode(validate=Some(false)).rules
+      } yield childrenRules + ("$other" -> invalidNodeRules)
+
+    FbNode(validate=childrenValidate, customRules=childRules)
   }
 }
 
 sealed trait FbObjectField {
   val node: FbNode
-  val required: Boolean
+  val isRequired: Boolean
 }
 
 case class FbRequired(node: FbNode) extends FbObjectField {
-  val required = true
+  val isRequired = true
 }
 
 case class FbOptional(node: FbNode) extends FbObjectField {
-  val required = false
+  val isRequired = false
 }
 
 // Implicits
