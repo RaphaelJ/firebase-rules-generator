@@ -18,11 +18,26 @@
 
 package com.bloomlife.fbrules.types
 
-object FbDate {
-  /** Creates a `FbNode` that only accepts ISO 8601-formated dates
-   *  (e.g. 1997-07-16).
+object FbDateTime {
+  /** Creates a `FbNode` that only accepts ISO 8601-formated dates with time
+   *  (e.g. 1997-07-16T19:20:30.45+01:00).
+   *
+   *  @param hasTimeOffset if true, times can have a time offset other than Z
+   *                       (UTC).
    *
    *  See [[https://www.w3.org/TR/NOTE-datetime]] for reference.
    */
-  def apply(): FbNode = FbString(regex=Some("/^\\d{4}-[01]\\d-[0-3]\\d$$/"))
+  def apply(hasTimeOffset: Boolean = false): FbNode = {
+    val date = "\\d{4}-[01]\\d-[0-3]\\d"
+    val hourMin = "[0-2]\\d:[0-5]\\d"
+    val secMs = ":[0-5]\\d(.\\d+)?"
+
+    val timeOffet =
+      if (hasTimeOffset) s"(Z|([+-]${hourMin}))"
+      else "Z"
+
+    val regex = s"/^${date}T${hourMin}(${secMs})?${timeOffet}$$/"
+
+    FbString(regex=Some(regex))
+  }
 }

@@ -32,6 +32,7 @@ object Main {
       )
 
     val userDef = FbObject(
+      "created_at"  := FbDateTime(hasTimeOffset=true),
       "name"        := FbString(minLength=Some(4), maxLength=Some(64)),
       "email"       := FbString(),
       "age"         ?= FbNumber(min=Some(18)),
