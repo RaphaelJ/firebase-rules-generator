@@ -26,8 +26,8 @@ object FbEmail {
    */
   def apply(): FbNode = {
     val user = "[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+"
-    val host = """[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(\\.[a-zA-Z0-9]
-([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*"""
+    val host = "[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(\\.[a-zA-Z0-9]" +
+               "([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*"
 
     FbString(regex=Some(s"/^${user}@${host}$$/"))
   }
