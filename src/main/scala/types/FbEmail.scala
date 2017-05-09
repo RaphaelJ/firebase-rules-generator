@@ -18,26 +18,17 @@
 
 package com.bloomlife.fbrules.types
 
-object FbDateTime {
-  /** Creates a `FbNode` that only accepts ISO 8601-formated dates with time
-   *  (e.g. 1997-07-16T19:20:30.45+01:00).
+object FbEmail {
+  /** Creates a `FbNode` that only accepts valid email addresses.
    *
-   *  @param hasTimeOffset if true, times can have a time offset other than Z
-   *                       (UTC).
-   *
-   *  See [[https://www.w3.org/TR/NOTE-datetime]] for reference.
+   *  See [[https://www.w3.org/TR/html5/forms.html#valid-e-mail-address]] for
+   *  reference.
    */
-  def apply(hasTimeOffset: Boolean = false): FbNode = {
-    val date = "\\d{4}-[01]\\d-[0-3]\\d"
-    val hourMin = "[0-2]\\d:[0-5]\\d"
-    val secMs = ":[0-5]\\d(\\.\\d+)?"
+  def apply(): FbNode = {
+    val user = "[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+"
+    val host = """[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(\\.[a-zA-Z0-9]
+([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*"""
 
-    val timeOffet =
-      if (hasTimeOffset) s"(Z|([+-]${hourMin}))"
-      else "Z"
-
-    val regex = s"/^${date}T${hourMin}(${secMs})?${timeOffet}$$/"
-
-    FbString(regex=Some(regex))
+    FbString(regex=Some(s"/^${user}@${host}$$/"))
   }
 }
