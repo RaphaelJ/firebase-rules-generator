@@ -235,9 +235,9 @@ case class DataSnapshot(origin: OriginNode, moves: Seq[PathMove] = Seq.empty) {
     }
   }
 
-  def child(node: String) = copy(moves=Child(node) +: moves)
+  def child(node: StringExpr) = copy(moves=Child(node) +: moves)
 
-  def /(node: String) = child(node)
+  def /(node: StringExpr) = child(node)
 
   def parent = {
     // If the last move is a child, just removes it.
@@ -296,8 +296,8 @@ object Root extends DataSnapshot(RootNode)
 
 sealed trait PathMove { def toJSPath: String }
 
-case class Child(name: String) extends PathMove {
-  def toJSPath = s"child('${name}')"
+case class Child(path: StringExpr) extends PathMove {
+  def toJSPath = s"child(${path.toJS})"
 }
 
 case class Parent() extends PathMove { def toJSPath = s"parent()" }

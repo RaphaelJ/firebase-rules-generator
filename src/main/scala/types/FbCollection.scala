@@ -32,7 +32,7 @@ object FbCollection {
         // Generates a new `$location` variable.
         currId <- get
         _ <- put(currId + 1)
-        currIdStr = s"$$id_${currId}"
+        currIdStr = s"id_${currId}"
 
         nestedRules <- coll(LocationVariable(currIdStr)).rules
       } yield JsObject(Seq(currIdStr -> nestedRules))
