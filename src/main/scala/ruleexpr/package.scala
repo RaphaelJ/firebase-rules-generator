@@ -60,6 +60,8 @@ sealed trait BoolExpr extends EqualableExpr {
     new BoolExpr() { def toJS = s"(!${js})" }
   }
 
+  def unary_! = not
+
   // TODO: implement the ternary operator.
   // def ifelse[T <: RuleExpr](ifTrue: T, ifFalse: T) = {
   //   val js = this.toJS
@@ -185,6 +187,8 @@ object Implicits {
 // `auth` object
 
 object Auth {
+  def isLoggedIn = new BoolExpr() { def toJS = "auth != null" }
+
   def provider = new StringExpr() { def toJS = "auth.provider" }
 
   def uid = new StringExpr() { def toJS = "auth.uid" }

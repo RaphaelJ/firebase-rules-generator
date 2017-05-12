@@ -24,10 +24,10 @@ import com.bloomlife.fbrules.ruleexpr.Implicits._
 
 object FbEnum {
   /** Creates a field that only accepts a limited set of values. */
-  def apply(validValues: String*): FbNode = {
-    require(!validValues.isEmpty)
+  def apply(options: String*): FbNode = {
+    require(!options.isEmpty)
 
-    val cond = validValues.map(NewData.asString === _).reduce(_ || _)
+    val cond = options.map(NewData.asString === _).reduce(_ || _)
 
     FbString().validateIf(cond)
   }
