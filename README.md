@@ -12,15 +12,15 @@ Schemas are defined as plain-Scala scripts.
 
 ## Example
 
-Let's suppose that you want to enforce a schema for a basic chat app. The complete working example is available in `src/main/scala/examples/ChatApp.scala`.
+Let's suppose that you want to enforce a schema for a basic chat app. The complete working example is located at `src/main/scala/examples/ChatApp.scala`.
 
 You can generate the rules by running the script by running the following command:
 
 ```
-runMain com.bloomlife.fbrules.examples.ChatApp
+sbt run-main com.bloomlife.fbrules.examples.ChatApp
 ```
 
-This chat app will be composed of three main objects: *users*, *rooms* and *messages*:
+Our chat example app will be composed of three main object types: *users*, *rooms* and *messages*:
 
 ```
 {
