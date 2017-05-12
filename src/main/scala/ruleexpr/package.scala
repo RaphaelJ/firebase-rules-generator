@@ -187,7 +187,7 @@ object Implicits {
 // `auth` object
 
 object Auth {
-  def isLoggedIn = new BoolExpr() { def toJS = "auth != null" }
+  def isLoggedIn = new BoolExpr() { def toJS = "auth!=null" }
 
   def provider = new StringExpr() { def toJS = "auth.provider" }
 

@@ -24,5 +24,8 @@ import play.api.libs.json._
 object Rules {
   type Generator[T] = State[Int, T]
 
-  def generate(schema: types.FbNode): JsValue = schema.rules.eval(0)
+  def generate(schema: types.FbNode): JsValue = {
+    val rules = schema.rules.eval(0)
+    JsObject(Seq("rules" -> rules))
+  }
 }
