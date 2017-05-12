@@ -67,7 +67,7 @@ This chat app will be composed of three main objects: *users*, *rooms* and *mess
 
 ### Defining objects
 
-Let's start by defining the schema for user. Object schemas are defined using `FbObject()`:
+Let's start by defining the schema for users. Object schemas are defined using `FbObject()`:
 
 ```
 val user = FbObject(

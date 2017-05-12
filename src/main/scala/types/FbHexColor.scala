@@ -26,5 +26,5 @@ import com.bloomlife.fbrules.ruleexpr.LocationVariable
 
 object FbHexColor {
   /** Accepts any hexadecimal RGB color (e.g. '#ABB987' or '#ABC'). */
-  def apply(): FbNode = FbString(regex=Some(s"/^#([a-zA-Z0-9]{3}){1,2}$$/"))
+  def apply(): FbNode = FbString(regex=Some("/^#([a-zA-Z0-9]{3}){1,2}$/"))
 }

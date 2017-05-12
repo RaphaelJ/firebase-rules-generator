@@ -265,7 +265,7 @@ case class DataSnapshot(origin: OriginNode, moves: Seq[PathMove] = Seq.empty) {
         map(child => child.toJS).
         mkString(",")
 
-      s"${_jsPath}.hasChildren(${childrenStr})"
+      s"${_jsPath}.hasChildren([${childrenStr}])"
     }
   }
 

@@ -24,5 +24,5 @@ object FbDate {
    *
    *  See [[https://www.w3.org/TR/NOTE-datetime]] for reference.
    */
-  def apply(): FbNode = FbString(regex=Some("/^\\d{4}-[01]\\d-[0-3]\\d$$/"))
+  def apply(): FbNode = FbString(regex=Some("/^\\d{4}-[01]\\d-[0-3]\\d$/"))
 }

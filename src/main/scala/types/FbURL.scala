@@ -29,7 +29,7 @@ object FbURL {
   def apply(): FbNode = {
     // Regex from http://stackoverflow.com/questions/3809401
     val regex = "/^https?:\\/\\/[-a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,6}" +
-                "\\b([-a-zA-Z0-9@:%_\\+.~#?&//=]*)$$/"
+                "([-a-zA-Z0-9@:%_\\+.~#?&//=]*)$/"
     FbString(regex=Some(regex))
   }
 }
