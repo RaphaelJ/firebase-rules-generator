@@ -17,7 +17,7 @@ Let's suppose that you want to enforce a schema for a basic chat app. The comple
 You can generate the rules by running the script by running the following command:
 
 ```
-sbt run-main com.bloomlife.fbrules.examples.ChatApp
+ sbt "run-main com.bloomlife.fbrules.examples.ChatApp"
 ```
 
 Our chat example app will be composed of three main object types: *users*, *rooms* and *messages*:
