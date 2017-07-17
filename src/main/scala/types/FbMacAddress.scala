@@ -24,6 +24,6 @@ object FbMacAddress {
     */
   def apply(): FbNode = {
     val hexByte = "[A-Fa-f0-9]{2}"
-    FbString(regex=Some(s"/^(${hexByte}:){5}${hexByte}{2}$$/"))
+    FbString(regex=Some(s"/^(${hexByte}:){5}${hexByte}$$/"))
   }
 }
