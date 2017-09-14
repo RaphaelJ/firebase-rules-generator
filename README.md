@@ -37,6 +37,7 @@ Our chat example app will be composed of three main object types: *users*, *room
             "id": "userid2",
             "created_at": "2017-01-14T09:09:33.15Z",
             "full_name": "Dave Null",
+            "birth_date": "1970-01-01T00:00:00Z",
             "email": "dev@null.com",
             "sex": "male"
         }

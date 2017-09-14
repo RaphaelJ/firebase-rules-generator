@@ -81,7 +81,7 @@ object ChatApp {
         "full_name"         := FbString(maxLength=Some(256)),   // A string that is 256 characters or less
 
         // Optional fields
-        "birth_date"        ?= FbDate(),                        // An ISO 8601 date, without time
+        "birth_date"        ?= FbOr(FbDate(), FbDateTime()),    // An ISO 8601 date, with or without time
         "sex"               ?= FbEnum("male", "female"),        // Should be either "male" or "female"
         "website"           ?= FbURL()                          // A valid URL that starts with 'http' or 'https'
       )
@@ -105,6 +105,7 @@ object ChatApp {
 
     val message = FbObject(
         "created_at"        := FbDateTime(),                    // An ISO 8601 date + time, without timezome
+
         "sender"            :=
           FbString().
             // Checks that sender is the current user
