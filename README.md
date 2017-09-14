@@ -95,7 +95,8 @@ val user = FbObject(
 | `FbEnum(option1, option2, ...)` | Only accepts the listed values | `male` or `female` if defined as `FbEnum("male", "female")` |
 | `FbHexColor()` | Hexadecimal RGB color                     | `"#ABB987"`, `"#ABC"` |
 | `FbNode()`     | Any value                                 | `12`, `"hello world"`, `false` |
-| `FbNumber(min=None, max=None)` | Any integral or floating point numbers. If `min` is not `None`, should be `>=` than this value. If `max` is not `None`, should be `<=` than this value. | `0`, `0.3145`, `1` if defined as `FbEnum(min=Some(0), max=Some(1))` |
+| `FbNumber(min=None, max=None)` | Any integral or floating point numbers. If `min` is not `None`, should be `>=` than this value. If `max` is not `None`, should be `<=` than this value. | `0`, `0.3145`, `1` if defined as `FbNumber(min=Some(0), max=Some(1))` |
+| `FbOr(node1, node2, ...)` | Allow any one of the given node types | `3.14159`, `true` or `"Hello"` if defined as `FbOr(FbNumber(), FbBoolean(), FbString())` |
 | `FbString(minLength = None, maxLength = None, regex = None)` | A character string that is at least `minLength` characters long (if defined), at most `maxLength` characters long (if defined) and that matches the given [Javascript regular expression](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions) (if defined). | Any string that ends with `ed` and that is at least 3 characters long if defined as `FbString(minLength=Some(3), regex=Some("/ed$/")`. |
 | `FbURL()`     | URL that begin with `http://` or `https://`. | `"http://bloomlife.com"` |
 
