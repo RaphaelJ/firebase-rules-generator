@@ -133,9 +133,9 @@ sealed trait StringExpr extends EqualableExpr {
     new BoolExpr() { def toJS = s"${js}.contains(${str.toJS})" }
   }
 
-  def beginWith(str: StringExpr) = {
+  def beginsWith(str: StringExpr) = {
     val js = this.toJS
-    new BoolExpr() { def toJS = s"${js}.beginWith(${str.toJS})" }
+    new BoolExpr() { def toJS = s"${js}.beginsWith(${str.toJS})" }
   }
 
   def endsWith(str: StringExpr) = {
