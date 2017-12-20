@@ -3,7 +3,7 @@ import Dependencies._
 name            := "firebase-rules-generator"
 organization    := "com.bloomlife"
 scalaVersion    := "2.12.1"
-version         := "0.1.1"
+version         := "0.1.2"
 
 // Allows the use of higher-kinded types.
 scalacOptions += "-feature"
