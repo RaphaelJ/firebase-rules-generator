@@ -100,7 +100,9 @@ object ChatApp {
 
             // Ensures that the associated user object exists.
             validateIf((Root / "users" / userId).exists)
-        )
+        ),
+
+        "num_messages"      := FbInteger(min=Some(0))
       )
 
     val message = FbObject(
