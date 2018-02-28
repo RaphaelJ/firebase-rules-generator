@@ -73,7 +73,7 @@ Let's start by defining the schema for users. Object schemas are defined using `
 ```
 val user = FbObject(
     // Required fields
-    "created_at"        := FbDateTime(),                    // An ISO 8601 date + time, without timezome
+    "created_at"        := FbDateTime(),                    // An ISO 8601 date + time, without timezone
     "email"             := FbEmail(),                       // A valid email address
     "full_name"         := FbString(maxLength=Some(256)),   // A string that is 256 characters or less
 
@@ -89,11 +89,12 @@ val user = FbObject(
 | Field type    | Description                                | Examples        |
 |---------------|--------------------------------------------|-----------------|
 | `FbBoolean()` | Either the value `true` or `false`         | `true`, `false` |
-| `FbDate()`    | [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) formated date | `"2017-12-25"`    |
-| `FbDateTime(hasTimeOffset=false)` | [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) formated date with time. If `hasTimeOffset` is set to `true` (default is `false`), accepts a time offset different than UTC. | `"2017-12-25T01:12:32.35Z"`, `"2017-12-25T01:13:32.35+01:00"` (if `hasTimeOffset` is set to `true`). |
+| `FbDate()`    | [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) formatted date | `"2017-12-25"`    |
+| `FbDateTime(hasTimeOffset=false)` | [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) formatted date with time. If `hasTimeOffset` is set to `true` (default is `false`), accepts a time offset different than UTC. | `"2017-12-25T01:12:32.35Z"`, `"2017-12-25T01:13:32.35+01:00"` (if `hasTimeOffset` is set to `true`). |
 | `FbEmail()`   | Valid email addresses                      | `"raphael@bloomlife.com"` |
 | `FbEnum(option1, option2, ...)` | Only accepts the listed values | `male` or `female` if defined as `FbEnum("male", "female")` |
 | `FbHexColor()` | Hexadecimal RGB color                     | `"#ABB987"`, `"#ABC"` |
+| `FbInteger(min=None, max=None)`  | Same as `FbNumber`, but only validates integral values | `1000`, `-256` |
 | `FbNode()`     | Any value                                 | `12`, `"hello world"`, `false` |
 | `FbNumber(min=None, max=None)` | Any integral or floating point numbers. If `min` is not `None`, should be `>=` than this value. If `max` is not `None`, should be `<=` than this value. | `0`, `0.3145`, `1` if defined as `FbNumber(min=Some(0), max=Some(1))` |
 | `FbOr(node1, node2, ...)` | Allow any one of the given node types | `3.14159`, `true` or `"Hello"` if defined as `FbOr(FbNumber(), FbBoolean(), FbString())` |
@@ -102,7 +103,7 @@ val user = FbObject(
 
 ### Object collections
 
-Sometimes, one will want to have a collections of objects of the same schema, indentified by an unique ID. Use `FbCollection()` to define new collections. The following example define the `users`, `rooms` and `messages` collections of our example:
+Sometimes, one will want to have a collections of objects of the same schema, identified by an unique ID. Use `FbCollection()` to define new collections. The following example define the `users`, `rooms` and `messages` collections of our example:
 
 ```
 val users = FbCollection(userId => user)
